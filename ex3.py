@@ -231,9 +231,9 @@ def main():
     train_data, dev_data = train_dev_split(train_x, train_y)
     # Initialize net params
     # params = init_net([input_size, 300, 50, 10])
-    params = init_net([input_size, 128, 10])
+    # params = init_net([input_size, 128, 10])
     # params = init_net([input_size, 256, 128, 100, 10])
-    # params = init_net([input_size, 1000, 500, 100, 10])
+    params = init_net([input_size, 1000, 500, 100, 10])  # best with 81.9% on dev
     # todo: find best hyper-parameters
     # train params
     params = train(train_data, dev_data, params, epochs=5, learning_rate=1e-5)

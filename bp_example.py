@@ -7,6 +7,7 @@ import numpy as np
 
 sigmoid = lambda x: 1 / (1 + np.exp(-x))
 
+
 def fprop(x, y, params):
   # Follows procedure given in notes
   W1, b1, W2, b2 = [params[key] for key in ('W1', 'b1', 'W2', 'b2')]
@@ -20,6 +21,7 @@ def fprop(x, y, params):
     ret[key] = params[key]
   return ret
 
+
 def bprop(fprop_cache):
   # Follows procedure given in notes
   x, y, z1, h1, z2, h2, loss = [fprop_cache[key] for key in ('x', 'y', 'z1', 'h1', 'z2', 'h2', 'loss')]
@@ -32,9 +34,10 @@ def bprop(fprop_cache):
   db1 = dz1                                     #  dL/dz2 * dz2/dh1 * dh1/dz1 * dz1/db1
   return {'b1': db1, 'W1': dW1, 'b2': db2, 'W2': dW2}
 
+
 if __name__ == '__main__':
   # Initialize random parameters and inputs
-  W1 = np.random.rand(2,2)
+  W1 = np.random.rand(2, 2)
   b1 = np.random.rand(2, 1)
   W2 = np.random.rand(1, 2)
   b2 = np.random.rand(1, 1)
