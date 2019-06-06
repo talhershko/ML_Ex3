@@ -243,3 +243,59 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # check()
+
+
+# USE THIS FOR GRADIENT CHECKS (see grad_check.py)
+
+
+def check():
+    # Sanity checks. If these fail, your gradient calculation is definitely wrong.
+    # If they pass, it is likely, but not certainly, correct.
+    from grad_check import gradient_check
+
+    W1, b1, W2, b2, W3, b3 = init_net([3, 4, 8, 5])
+
+    def _loss_and_W1_grad(W1):
+        global b1, W2, b2, W3, b3
+        loss, grads = backprop([-7.3, 5, 0], 0, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[0]
+
+    def _loss_and_b1_grad(b1):
+        global W1, W2, b2, W3, b3
+        loss, grads = backprop([-9, 22, 3.2], 2, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[1]
+
+    def _loss_and_W2_grad(W2):
+        global W1, b1, b2, W3, b3
+        loss, grads = backprop([-1, 7, 4], 1, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[2]
+
+    def _loss_and_b2_grad(b2):
+        global W1, b1, W2, W3, b3
+        loss, grads = backprop([1, 2, 3], 0, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[3]
+
+    def _loss_and_W3_grad(W3):
+        global W1, b1, W2, b2, b3
+        loss, grads = backprop([-1, 78, 4], 1, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[4]
+
+    def _loss_and_b3_grad(b3):
+        global W1, b1, W2, b2, W3
+        loss, grads = backprop([1, 2, 7.25], 3, [W1, b1, W2, b2, W3, b3])
+        return loss, grads[5]
+
+    for _ in range(10):
+        W1 = np.random.randn(W1.shape[0], W1.shape[1])
+        b1 = np.random.randn(b1.shape[0])
+        W2 = np.random.randn(W2.shape[0], W2.shape[1])
+        b2 = np.random.randn(b2.shape[0])
+        W3 = np.random.randn(W3.shape[0], W3.shape[1])
+        b3 = np.random.randn(b3.shape[0])
+        gradient_check(_loss_and_b1_grad, b1)
+        gradient_check(_loss_and_W1_grad, W1)
+        gradient_check(_loss_and_b2_grad, b2)
+        gradient_check(_loss_and_W2_grad, W2)
+        gradient_check(_loss_and_b3_grad, b3)
+        gradient_check(_loss_and_W3_grad, W3)
