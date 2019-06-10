@@ -3,8 +3,6 @@ from scipy.special import softmax
 
 
 ReLU = lambda x: np.maximum(0, x)
-# todo: replace tanh with ReLU, in network initialization, forward pass and backpropagation
-
 
 def read_data():
     train_x = np.loadtxt("train_x")
@@ -43,13 +41,13 @@ def forward(x, params):
     for layer in range(int(len(params) / 2)):
         # Get layer params
         W, b = params[2 * layer], params[2 * layer + 1]
-        # Compute next layer input - tanh(x*W + b)
+        # Compute next layer input - ReLU(x*W + b)
         # Prevent activation in linear classifier
         # Prevent activation for output layer
         if len(params) / 2 == 1 or layer == len(params) / 2 - 1:
             next_x = np.dot(x_list[-1], W) + b
         else:
-            next_x = np.tanh(np.dot(x_list[-1], W) + b)
+            next_x = ReLU(np.dot(x_list[-1], W) + b)
         # Add current layer output to the stack
         x_list.append(next_x)
     # Softmax last output x_n
@@ -77,7 +75,7 @@ def backprop(x, y, params):
     # Hard cross-entropy loss (Same as NLLL ? todo: check!)
     probs = forward(x, params)[-1]
     loss = -np.log(probs[y])
-    # Mark x_i+1 = tanh(x_i * W_i + b_i)
+    # Mark x_i+1 = ReLU(x_i * W_i + b_i)
     # Last is x_n+1 = x_n * W_n + b_n (before softmax)
     # As in mlp1 we know d(loss)/d(x_n+1)
     dl_dx = probs.copy()
@@ -107,10 +105,10 @@ def backprop(x, y, params):
         b_next, W_next, bi, Wi = p[0:4]
         # Mark m_i = x_i * W_i + b_i
         mi = np.dot(xi, Wi) + bi
-        # Mark h_i = tanh(m_i) = x_i+1
-        hi = np.tanh(mi)
-        # dh_i/dm_i = 1 - tanh(m_i) ** 2
-        dhi_dmi = 1 - hi ** 2
+        # Mark h_i = ReLU(m_i) = x_i+1
+        hi = ReLU(mi)
+        # dh_i/dm_i = ReLU'(m_i)
+        dhi_dmi = (mi>=0).astype(int)
         # dm_i/dW_i = x_i
         # dm_i/db_i = 1
         # Apply the chain rule (use known gradients)
