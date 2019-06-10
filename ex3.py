@@ -126,48 +126,16 @@ def backprop(x, y, params):
     return loss, grads
 
 
-def init_epsilon(n, m):
-    """
-    Get good initialization epsilon with Xavier Glorot et al's suggestion
-    Initial n * m matrix will distribute uniformly in (-epsilon, +epsilon)
-    """
-    # Xavier Glorot et al's suggestion
-    return np.sqrt(6) / np.sqrt(n + m)
-
-
 def init_net(dims):
-    """
-    returns the parameters for a multi-layer perceptron with an arbitrary number
-    of hidden layers.
-    dims is a list of length at least 2, where the first item is the input
-    dimension, the last item is the output dimension, and the ones in between
-    are the hidden layers.
-    For example, for:
-        dims = [300, 20, 30, 40, 5]
-    We will have input of 300 dimension, a hidden layer of 20 dimension, passed
-    to a layer of 30 dimensions, passed to learn of 40 dimensions, and finally
-    an output of 5 dimensions.
-
-    Assume a tanh activation function between all the layers.
-    # todo: Adjust initialization for ReLU (He et al., 2015)
-
-    return:
-    a flat list of parameters where the first two elements are the W and b from input
-    to first layer, then the second two are the matrix and vector from first to
-    second layer, and so on.
-    """
+    '''
+    Initialize neural network parameters (assuming ReLU activation)
+    '''
     # Set parameters list
     params = []
     for layer in range(1, len(dims)):
-        # Xavier Glorot et al's suggestion
-        epsilon = init_epsilon(dims[layer - 1], dims[layer])
-        '''
-        W = np.random.randn(dims[layer-1], dims[layer]) * np.sqrt(1 / dims[layer-1])
-        b = np.random.randn(dims[layer]) * np.sqrt(1 / dims[layer-1])
-        '''
-        W = np.random.rand(dims[layer - 1], dims[layer]) * 2 * epsilon - epsilon
-        epsilon = init_epsilon(1, dims[layer])
-        b = np.random.rand(dims[layer]) * 2 * epsilon - epsilon
+        # He et al's suggestion
+        W = np.random.randn(dims[layer-1], dims[layer]) * np.sqrt(2 / dims[layer-1])
+        b = np.random.randn(dims[layer]) * np.sqrt(2 / dims[layer-1])
         # Add new params to the list
         params.extend([W, b])
     return params
@@ -219,8 +187,18 @@ def evaluate(data, params):
     return accuracy
 
 
-def predict(test_x):
-    pass
+def predict(test_x, params, file):
+    '''
+    Predict test set labels using trained parameters
+    '''
+    with open(file, 'w+') as file:
+        for x in test_x:
+            # Calculate the class scores
+            probs = forward(x, params)[-1]
+            # Find argmax
+            y_hat = np.argmax(probs)
+            # Write to file
+            file.write(str(y_hat) + '\n')
 
 
 def main():
@@ -237,7 +215,7 @@ def main():
     # todo: find best hyper-parameters
     # train params
     params = train(train_data, dev_data, params, epochs=5, learning_rate=1e-5)
-    # predict
+    predict(test_x, params, 'test_y')
     pass
 
 
